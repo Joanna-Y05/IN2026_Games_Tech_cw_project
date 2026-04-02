@@ -5,7 +5,7 @@
 #include <time.h>		// The standard header to access time fuctions
 
 #include "GlutSession.h"
-#include "Asteroids.h"
+#include "Game.h"
 
 // Now we need to perform some Windows magic to stop an extra console
 // window from appearing, don't worry about the specifics of this.
@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 	// Initialise a unique GLUT session
 	GlutSession::GetInstance().Init(argc, argv);
 	// Create a new asteroids game
-	Asteroids asteroids(argc, argv);
+	Game game(argc, argv);
 	// Start the asteroids game
-	asteroids.Start();
+	game.Start();
 
 	return 0;
 }
