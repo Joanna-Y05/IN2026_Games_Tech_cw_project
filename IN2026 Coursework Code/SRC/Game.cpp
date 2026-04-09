@@ -1,4 +1,4 @@
-//#include "Enemy.h"
+#include "Enemy.h"
 #include "Game.h"
 #include "Animation.h"
 #include "AnimationManager.h"
@@ -56,8 +56,8 @@ void Game::Start()
 	glEnable(GL_LIGHT0);
 
 	Animation* explosion_anim = AnimationManager::GetInstance().CreateAnimationFromFile("explosion", 64, 1024, 64, 64, "explosion_fs.png");
-	//Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
-	//Animation* spaceship_anim = AnimationManager::GetInstance().CreateAnimationFromFile("spaceship", 128, 128, 128, 128, "spaceship_fs.png");
+	Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
+	Animation* spaceship_anim = AnimationManager::GetInstance().CreateAnimationFromFile("spaceship", 128, 128, 128, 128, "spaceship_fs.png");
 
 	// Create a spaceship and add it to the world
 	mGameWorld->AddObject(CreateCharacter());
@@ -191,15 +191,15 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	// shared_ptrs of different types because GameWorld implements IRefCount
 	mCharacter = make_shared<Character>();
 	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 4.0f));
-	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Ammo.shape");
+	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
 	mCharacter->SetAmmoShape(Ammo_shape);
-	//Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("spaceship");
-	//shared_ptr<Sprite> Character_sprite =
-		//make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
-	//mCharacter->SetSprite(Character_sprite);
-	//mCharacter->SetScale(0.1f);
+	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("spaceship");
+	shared_ptr<Sprite> Character_sprite =
+	make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+	mCharacter->SetSprite(Character_sprite);
+	mCharacter->SetScale(0.1f);
 	// Reset spaceship back to centre of the world
-	//mCharacter->Reset();
+	mCharacter->Reset();
 	// Return the spaceship so it can be added to the world
 	return mCharacter;
 
@@ -210,13 +210,13 @@ void Game::CreateEnemies(const uint num_enemies)
 	mEnemyCount = num_enemies;
 	for (uint i = 0; i < num_enemies; i++)
 	{
-		//Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
-		//shared_ptr<Sprite> enemy_sprite =
-			//make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
-		//enemy_sprite->SetLoopAnimation(true);
+		Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
+		shared_ptr<Sprite> enemy_sprite =
+			make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+		enemy_sprite->SetLoopAnimation(true);
 		shared_ptr<GameObject> enemy = make_shared<Enemy>();
 		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 10.0f));
-		//enemy->SetSprite(enemy_sprite);
+		enemy->SetSprite(enemy_sprite);
 		enemy->SetScale(0.2f);
 		mGameWorld->AddObject(enemy);
 	}
