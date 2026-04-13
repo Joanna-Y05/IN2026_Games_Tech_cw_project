@@ -433,5 +433,6 @@ FodyWeavers.xsd
 *.json
 *.opendb
 *.db-wal
-*.tlog
 *.lnk
+*.obj
+*.lastbuildstate
