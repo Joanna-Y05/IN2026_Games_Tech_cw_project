@@ -426,3 +426,12 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+*.vsdix
+*.pdb
+*.idb
+*.ipch
+*.json
+*.opendb
+*.db-wal
+*.tlog
+*.lnk
