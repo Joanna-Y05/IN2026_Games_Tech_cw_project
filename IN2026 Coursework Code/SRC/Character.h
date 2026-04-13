@@ -16,7 +16,9 @@ public:
 	virtual void Update(int t);
 	virtual void Render(void);
 
-	virtual void Move(float t);
+	virtual void MoveVertical(float t);
+	virtual void MoveHorizontal(float t);
+
 	virtual void Rotate(float r);
 	virtual void Shoot(void);
 
@@ -31,5 +33,6 @@ private:
 
 	shared_ptr<Shape> mCharacterShape;
 	shared_ptr<Shape> mAmmoShape;
+	shared_ptr<Animation> mAnim;
 };
 #endif

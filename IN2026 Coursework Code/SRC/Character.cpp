@@ -40,6 +40,7 @@ void Character::Update(int t)
 	GameObject::Update(t);
 }
 
+
 /** Render this spaceship. */
 void Character::Render(void)
 {
@@ -48,12 +49,17 @@ void Character::Render(void)
 }
 
 /** Fire the rockets. */
-void Character::Move(float t)
+void Character::MoveVertical(float t)
 {
 	mSpeed = t;
-	// Increase acceleration in the direction of ship
-	mAcceleration.x = mSpeed * cos(DEG2RAD * mAngle);
-	mAcceleration.y = mSpeed * sin(DEG2RAD * mAngle);
+	mVelocity.y = mSpeed * cos(DEG2RAD);
+}
+
+void Character::MoveHorizontal(float t)
+{
+	mSpeed = t;
+	mVelocity.x = mSpeed * cos(DEG2RAD);
+
 }
 
 /** Set the rotation. */

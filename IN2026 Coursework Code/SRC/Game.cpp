@@ -11,7 +11,6 @@
 #include "BoundingSphere.h"
 #include "GUILabel.h"
 #include "Explosion.h"
-#include "Enemy.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -55,14 +54,25 @@ void Game::Start()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
 	glEnable(GL_LIGHT0);
 
+
+	//change these for new assets
 	Animation* explosion_anim = AnimationManager::GetInstance().CreateAnimationFromFile("explosion", 64, 1024, 64, 64, "explosion_fs.png");
 	Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
-	Animation* spaceship_anim = AnimationManager::GetInstance().CreateAnimationFromFile("spaceship", 128, 128, 128, 128, "spaceship_fs.png");
-
-	// Create a spaceship and add it to the world
+	
+	//player anim stuff
+	Animation* player_anim_idle = AnimationManager::GetInstance().CreateAnimationFromFile("char_idle", 768, 128, 128, 128, "char_idle.png"); 
+	Animation* player_anim_rightMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveRight", 768, 128, 128, 128, "char_move_right.png");
+	Animation* player_anim_leftMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveLeft", 768, 128, 128, 128, "char_move_left.png");
+	Animation* player_anim_downMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveDown", 768, 128, 128, 128, "char_move_down.png");
+	Animation* player_anim_upMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveUp", 768, 128, 128, 128, "char_move_up.png");
+	Animation* player_anim_death = AnimationManager::GetInstance().CreateAnimationFromFile("char_death", 1536, 128, 128, 128, "char_death.png");
+	Animation* player_anim_damage = AnimationManager::GetInstance().CreateAnimationFromFile("char_damage", 768, 128, 128, 128, "char_damage.png");
+	
+	// Create a character and add it to the world
 	mGameWorld->AddObject(CreateCharacter());
+
 	// Create some asteroids and add them to the world
-	CreateEnemies(10);
+	//CreateEnemies(10);
 
 	//Create the GUI
 	CreateGUI();
@@ -102,42 +112,130 @@ void Game::OnKeyReleased(uchar key, int x, int y) {}
 
 void Game::OnSpecialKeyPressed(int key, int x, int y)
 {
+	shared_ptr<Sprite> Character_sprite1;
+	Animation* anim_ptr2;
+
 	switch (key)
 	{
 		// If up arrow key is pressed start applying forward thrust
 	case GLUT_KEY_UP: 
-		mCharacter->Move(10); break;
+		mCharacter->MoveVertical(10);
+
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveUp");
+		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
+		mCharacter->SetSprite(Character_sprite1);
+
+		mCharacter->SetScale(0.8f);
+
+		
+		break;
+
 		// 
 		// If left arrow key is pressed start rotating anti-clockwise
 	case GLUT_KEY_LEFT: 
-		mCharacter->Rotate(90); break;
+		mCharacter->MoveHorizontal(-10);
+
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveLeft");
+		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
+		mCharacter->SetSprite(Character_sprite1);
+		mCharacter->SetScale(0.8f);
+			
+			
+		break;
 		// 
 		// If right arrow key is pressed start rotating clockwise
 	case GLUT_KEY_RIGHT: 
-		mCharacter->Rotate(-90); break;
-		// Default case - do nothing
-	default: break;
+		mCharacter->MoveHorizontal(10);
+
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveRight");
+		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
+		mCharacter->SetSprite(Character_sprite1);
+		mCharacter->SetScale(0.8f);
+		
+		break;
+
+	case GLUT_KEY_DOWN:
+		mCharacter->MoveVertical(-10);
+
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveDown");
+		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
+		mCharacter->SetSprite(Character_sprite1);
+		mCharacter->SetScale(0.8f);
+
+		break;
+
+
+	default: 
+
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
+		mCharacter->SetSprite(Character_sprite1);
+		mCharacter->SetScale(0.8f);
+		break;
 	}
 }
 
 void Game::OnSpecialKeyReleased(int key, int x, int y)
 {
+	shared_ptr<Sprite> Character_sprite2;
+
+	Animation* anim_ptr3;
+
 	switch (key)
 	{
 		// If up arrow key is released stop applying forward thrust
 	case GLUT_KEY_UP: 
-		mCharacter->Move(0); break;
+		mCharacter->MoveVertical(0);
+
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
+		mCharacter->SetSprite(Character_sprite2);
+		mCharacter->SetScale(0.8f);
+
+	break;
 		// 
 		// If left arrow key is released stop rotating
 	case GLUT_KEY_LEFT: 
-		mCharacter->Rotate(0); break;
+		mCharacter->MoveHorizontal(0);
+
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
+		mCharacter->SetSprite(Character_sprite2);
+		mCharacter->SetScale(0.8f);
+		
+		break;
 		// 
 		// If right arrow key is released stop rotating
-	case GLUT_KEY_RIGHT: 
-		mCharacter->Rotate(0); break;
+	case GLUT_KEY_RIGHT:  
+		mCharacter->MoveHorizontal(0);
+		
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
+		mCharacter->SetSprite(Character_sprite2);
+		mCharacter->SetScale(0.8f); 
+		break;
 		// 
+		// 
+
+	case GLUT_KEY_DOWN:
+		mCharacter->MoveVertical(0);
+
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
+		mCharacter->SetSprite(Character_sprite2);
+		mCharacter->SetScale(0.8f);
+
+		break;
 		// Default case - do nothing
-	default: break;
+	default: 
+		
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
+		mCharacter->SetSprite(Character_sprite2);
+		mCharacter->SetScale(0.8f);
+
+		break;
+
 	}
 }
 
@@ -193,11 +291,12 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 4.0f));
 	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
 	mCharacter->SetAmmoShape(Ammo_shape);
-	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("spaceship");
-	shared_ptr<Sprite> Character_sprite =
-	make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+
+	//character stuff
+	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+	shared_ptr<Sprite> Character_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
 	mCharacter->SetSprite(Character_sprite);
-	mCharacter->SetScale(0.1f);
+	mCharacter->SetScale(0.8f);
 	// Reset spaceship back to centre of the world
 	mCharacter->Reset();
 	// Return the spaceship so it can be added to the world
