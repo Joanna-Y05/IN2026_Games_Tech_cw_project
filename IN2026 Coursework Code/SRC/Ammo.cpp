@@ -11,7 +11,7 @@ Ammo::Ammo()
 }
 
 /** Construct a new bullet with given position, velocity, acceleration, angle, rotation and lifespan. */
-Ammo::Ammo(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r, int ttl)
+Ammo::Ammo(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r)
 	: GameObject("Ammo", p, v, a, h, r)
 {
 }
@@ -55,4 +55,17 @@ bool Ammo::CollisionTest(shared_ptr<GameObject> o)
 void Ammo::OnCollision(const GameObjectList& objects)
 {
 	mWorld->FlagForRemoval(GetThisPtr());
+}
+
+void Ammo::MoveVertical(float t)
+{
+	mSpeed = t;
+	mVelocity.y = mSpeed * cos(DEG2RAD);
+}
+
+void Ammo::MoveHorizontal(float t)
+{
+	mSpeed = t;
+	mVelocity.x = mSpeed * cos(DEG2RAD);
+
 }

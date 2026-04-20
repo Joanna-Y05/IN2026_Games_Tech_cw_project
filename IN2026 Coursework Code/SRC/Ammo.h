@@ -8,7 +8,7 @@ class Ammo : public GameObject
 {
 public:
 	Ammo();
-	Ammo(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r, int ttl);
+	Ammo(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r);
 	Ammo(const Ammo& b);
 	virtual ~Ammo(void);
 
@@ -20,8 +20,14 @@ public:
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
 
+	//added movement for ammo copying character movement scripts
+	virtual void MoveVertical(float t);
+	virtual void MoveHorizontal(float t);
+
+
 protected:
 	//int mTimeToLive;
+	float mSpeed;
 };
 
 

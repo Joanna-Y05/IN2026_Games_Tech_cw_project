@@ -60,11 +60,20 @@ void Game::Start()
 	Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
 	
 	//player anim stuff
-	Animation* player_anim_idle = AnimationManager::GetInstance().CreateAnimationFromFile("char_idle", 768, 128, 128, 128, "char_idle.png"); 
+
+	//idle sprites
+	Animation* player_anim_idleDown = AnimationManager::GetInstance().CreateAnimationFromFile("char_idleDown", 768, 128, 128, 128, "char_idle_down.png"); 
+	Animation* player_anim_idleUp = AnimationManager::GetInstance().CreateAnimationFromFile("char_idleUp", 768, 128, 128, 128, "char_idle_up.png");
+	Animation* player_anim_idleRight = AnimationManager::GetInstance().CreateAnimationFromFile("char_idleRight", 768, 128, 128, 128, "char_idle_right.png");
+	Animation* player_anim_idleLeft = AnimationManager::GetInstance().CreateAnimationFromFile("char_idleLeft", 768, 128, 128, 128, "char_idle_left.png");
+
+	//movement sprites
 	Animation* player_anim_rightMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveRight", 768, 128, 128, 128, "char_move_right.png");
 	Animation* player_anim_leftMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveLeft", 768, 128, 128, 128, "char_move_left.png");
 	Animation* player_anim_downMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveDown", 768, 128, 128, 128, "char_move_down.png");
 	Animation* player_anim_upMove = AnimationManager::GetInstance().CreateAnimationFromFile("char_moveUp", 768, 128, 128, 128, "char_move_up.png");
+
+	//other player sprites
 	Animation* player_anim_death = AnimationManager::GetInstance().CreateAnimationFromFile("char_death", 1536, 128, 128, 128, "char_death.png");
 	Animation* player_anim_damage = AnimationManager::GetInstance().CreateAnimationFromFile("char_damage", 768, 128, 128, 128, "char_damage.png");
 	
@@ -115,17 +124,21 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 	shared_ptr<Sprite> Character_sprite1;
 	Animation* anim_ptr2;
 
+	Direction dir;
+
 	switch (key)
 	{
 		// If up arrow key is pressed start applying forward thrust
 	case GLUT_KEY_UP: 
 		mCharacter->MoveVertical(10);
+		dir = UP;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveUp");
 		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
 		mCharacter->SetSprite(Character_sprite1);
 
 		mCharacter->SetScale(0.8f);
+		mCharacter->SetDirection(dir);
 
 		
 		break;
@@ -134,11 +147,13 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		// If left arrow key is pressed start rotating anti-clockwise
 	case GLUT_KEY_LEFT: 
 		mCharacter->MoveHorizontal(-10);
+		dir = LEFT;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveLeft");
 		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
 		mCharacter->SetSprite(Character_sprite1);
 		mCharacter->SetScale(0.8f);
+		mCharacter->SetDirection(dir);
 			
 			
 		break;
@@ -146,31 +161,37 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		// If right arrow key is pressed start rotating clockwise
 	case GLUT_KEY_RIGHT: 
 		mCharacter->MoveHorizontal(10);
+		dir = RIGHT;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveRight");
 		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
 		mCharacter->SetSprite(Character_sprite1);
 		mCharacter->SetScale(0.8f);
+		mCharacter->SetDirection(dir);
 		
 		break;
 
 	case GLUT_KEY_DOWN:
 		mCharacter->MoveVertical(-10);
+		dir = DOWN;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveDown");
 		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
 		mCharacter->SetSprite(Character_sprite1);
 		mCharacter->SetScale(0.8f);
+		mCharacter->SetDirection(dir);
 
 		break;
 
 
 	default: 
 
-		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		//if other doesn't work remove this
+		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 		Character_sprite1 = make_shared<Sprite>(anim_ptr2->GetWidth(), anim_ptr2->GetHeight(), anim_ptr2);
 		mCharacter->SetSprite(Character_sprite1);
 		mCharacter->SetScale(0.8f);
+		mCharacter->SetDirection(dir);
 		break;
 	}
 }
@@ -187,7 +208,7 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 	case GLUT_KEY_UP: 
 		mCharacter->MoveVertical(0);
 
-		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleUp");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
 		mCharacter->SetScale(0.8f);
@@ -198,7 +219,7 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 	case GLUT_KEY_LEFT: 
 		mCharacter->MoveHorizontal(0);
 
-		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleLeft");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
 		mCharacter->SetScale(0.8f);
@@ -209,7 +230,7 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 	case GLUT_KEY_RIGHT:  
 		mCharacter->MoveHorizontal(0);
 		
-		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleRight");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
 		mCharacter->SetScale(0.8f); 
@@ -220,7 +241,7 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 	case GLUT_KEY_DOWN:
 		mCharacter->MoveVertical(0);
 
-		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
 		mCharacter->SetScale(0.8f);
@@ -229,7 +250,7 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 		// Default case - do nothing
 	default: 
 		
-		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
 		mCharacter->SetScale(0.8f);
@@ -293,7 +314,7 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	mCharacter->SetAmmoShape(Ammo_shape);
 
 	//character stuff
-	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("char_idle");
+	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 	shared_ptr<Sprite> Character_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
 	mCharacter->SetSprite(Character_sprite);
 	mCharacter->SetScale(0.8f);

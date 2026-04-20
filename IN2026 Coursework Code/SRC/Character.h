@@ -5,6 +5,13 @@
 #include "GameObject.h"
 #include "Shape.h"
 
+enum Direction {
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN
+};
+
 class Character : public GameObject
 {
 public:
@@ -27,6 +34,7 @@ public:
 
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
+	void SetDirection(Direction dir) { mDirection = dir; }
 
 private:
 	float mSpeed;
@@ -34,5 +42,8 @@ private:
 	shared_ptr<Shape> mCharacterShape;
 	shared_ptr<Shape> mAmmoShape;
 	shared_ptr<Animation> mAnim;
+
+	Direction mDirection;
+
 };
 #endif
