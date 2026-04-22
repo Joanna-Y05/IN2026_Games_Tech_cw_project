@@ -17,7 +17,7 @@ Character::Character()
 
 /** Construct a spaceship with given position, velocity, acceleration, angle, and rotation. */
 Character::Character(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r)
-	: GameObject("Character", p, v, a, h, r), mSpeed(0)
+	: GameObject("Character", p, v, a, h, r), mSpeed(0), mMaxBullets(0)
 {
 }
 
@@ -76,56 +76,61 @@ void Character::Shoot(void)
 	// Check the world exists
 	if (!mWorld) return;
 
+	//first checks if ammo is available
+	if (mBullets > 0) {
 
-	// Construct a unit length vector in the direction the spaceship is headed
-	GLVector3f dirVec;
-	GLfloat aAngle;
+		// Construct a unit length vector in the direction the spaceship is headed
+		GLVector3f dirVec;
+		GLfloat aAngle;
 
-	switch (mDirection) {
-	case LEFT:
-		dirVec = GLVector3f(-1.0f, 0.0f, 0.0f);
-		aAngle = 0;
-		break;
+		switch (mDirection) {
+		case LEFT:
+			dirVec = GLVector3f(-1.0f, 0.0f, 0.0f);
+			aAngle = 0;
+			break;
 
-	case RIGHT:
-		dirVec = GLVector3f(1.0f, 0.0f, 0.0f);
-		aAngle = 180;
-		break;
+		case RIGHT:
+			dirVec = GLVector3f(1.0f, 0.0f, 0.0f);
+			aAngle = 180;
+			break;
 
-	case UP:
-		dirVec = GLVector3f(0.0f, 1.0f, 0.0f);
-		aAngle = 90;
-		break;
+		case UP:
+			dirVec = GLVector3f(0.0f, 1.0f, 0.0f);
+			aAngle = 90;
+			break;
 
-	case DOWN:
-		dirVec = GLVector3f(0.0f, -1.0f, 0.0f);
-		aAngle = 270;
-		break;
+		case DOWN:
+			dirVec = GLVector3f(0.0f, -1.0f, 0.0f);
+			aAngle = 270;
+			break;
+		}
+
+
+		// Calculate the point at the node of the spaceship from position and heading
+		GLVector3f ammo_position = mPosition;
+
+
+		// Calculate how fast the bullet should travel
+		float ammo_speed = 30;
+
+		// Construct a vector for the bullet's velocity
+		GLVector3f ammo_velocity = GLVector3f(
+			dirVec.x * ammo_speed,
+			dirVec.y * ammo_speed,
+			dirVec.z * ammo_speed
+		);
+
+
+		// Construct a new bullet
+		shared_ptr<GameObject> ammo
+		(new Ammo(ammo_position, ammo_velocity, mAcceleration, aAngle, 0));
+		ammo->SetBoundingShape(make_shared<BoundingSphere>(ammo->GetThisPtr(), 2.0f));
+		ammo->SetShape(mAmmoShape);
+		// Add the new bullet to the game world
+		mWorld->AddObject(ammo);
+
+		Character::DecreaseBullets();
 	}
-
-
-	// Calculate the point at the node of the spaceship from position and heading
-	GLVector3f ammo_position = mPosition;
-
-	
-	// Calculate how fast the bullet should travel
-	float ammo_speed = 30;
-
-	// Construct a vector for the bullet's velocity
-	GLVector3f ammo_velocity = GLVector3f(
-		dirVec.x * ammo_speed,
-		dirVec.y * ammo_speed,
-		dirVec.z * ammo_speed
-	);
-
-
-	// Construct a new bullet
-	shared_ptr<GameObject> ammo
-	(new Ammo(ammo_position, ammo_velocity, mAcceleration, aAngle, 0));
-	ammo->SetBoundingShape(make_shared<BoundingSphere>(ammo->GetThisPtr(), 2.0f));
-	ammo->SetShape(mAmmoShape);
-	// Add the new bullet to the game world
-	mWorld->AddObject(ammo);
 
 }
 

@@ -37,6 +37,7 @@ public:
 	// Declaration of the IPlayerLister interface //////////////////////////////
 
 	void OnPlayerKilled(int lives_left);
+	void OnBulletFired(int bullets_left);
 
 	// Declaration of IGameWorldListener interface //////////////////////////////
 
@@ -52,6 +53,7 @@ private:
 	shared_ptr<GUILabel> mScoreLabel;
 	shared_ptr<GUILabel> mLivesLabel;
 	shared_ptr<GUILabel> mGameOverLabel;
+	shared_ptr<GUILabel> mBulletsLabel;
 
 	uint mLevel;
 	uint mEnemyCount; //this has been changed

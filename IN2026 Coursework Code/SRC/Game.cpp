@@ -320,6 +320,8 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
 	mCharacter->SetAmmoShape(Ammo_shape);
 
+	mCharacter->SetBullets();
+
 	//character stuff
 	Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 	shared_ptr<Sprite> Character_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
@@ -392,6 +394,8 @@ void Game::CreateGUI()
 {
 	// Add a (transparent) border around the edge of the game display
 	mGameDisplay->GetContainer()->SetBorder(GLVector2i(10, 10));
+
+
 	// Create a new GUILabel and wrap it up in a shared_ptr
 	mScoreLabel = make_shared<GUILabel>("Score: 0");
 	// Set the vertical alignment of the label to GUI_VALIGN_TOP
@@ -422,6 +426,13 @@ void Game::CreateGUI()
 		= static_pointer_cast<GUIComponent>(mGameOverLabel);
 	mGameDisplay->GetContainer()->AddComponent(game_over_component, GLVector2f(0.5f, 0.5f));
 
+	//bullets label
+	mBulletsLabel = make_shared<GUILabel>("Bullets: 6");
+	mBulletsLabel->SetVerticalAlignment(GUIComponent::GUI_VALIGN_TOP);
+	shared_ptr<GUIComponent> bullets_component
+		= static_pointer_cast<GUIComponent>(mBulletsLabel);
+	mGameDisplay->GetContainer()->AddComponent(bullets_component, GLVector2f(0.0f, 0.9f));
+
 }
 
 void Game::OnScoreChanged(int score)
@@ -432,6 +443,16 @@ void Game::OnScoreChanged(int score)
 	// Get the score message as a string
 	std::string score_msg = msg_stream.str();
 	mScoreLabel->SetText(score_msg);
+}
+
+void Game::OnBulletFired(int bullets_left) {
+
+	// Format the bullet message using an string-based stream
+	std::ostringstream msg_stream;
+	msg_stream << "bullets: " << bullets_left;
+	// Get the score message as a string
+	std::string bullet_msg = msg_stream.str();
+	mBulletsLabel->SetText(bullet_msg);
 }
 
 void Game::OnPlayerKilled(int lives_left)

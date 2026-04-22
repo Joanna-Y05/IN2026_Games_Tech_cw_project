@@ -7,20 +7,32 @@
 #include "GameObjectType.h"
 #include "IPlayerListener.h"
 #include "IGameWorldListener.h"
+#include "Character.h"
 
 class Player : public IGameWorldListener
 {
 public:
-	Player() { mLives = 3; }
+	Player() { mLives = 3;}
 	virtual ~Player() {}
 
 	void OnWorldUpdated(GameWorld* world) {}
 
-	void OnObjectAdded(GameWorld* world, shared_ptr<GameObject> object) {}
+	void OnObjectAdded(GameWorld* world, shared_ptr<GameObject> object) {
+	
+		if (object->GetType() == GameObjectType("Character")) {
+			Character* temp = (Character*)object.get();
+			mBullets = temp->GetBullets();
+
+		}
+		if (object->GetType() == GameObjectType("Ammo")) {
+			mBullets -= 1;
+			BulletFired();
+		}
+	}
 
 	void OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 	{
-		if (object->GetType() == GameObjectType("Spaceship")) {
+		if (object->GetType() == GameObjectType("Character")) {
 			mLives -= 1;
 			FirePlayerKilled();
 		}
@@ -40,8 +52,18 @@ public:
 		}
 	}
 
+	void BulletFired()
+	{
+		// Send message to all listeners
+		for (PlayerListenerList::iterator lit = mListeners.begin();
+			lit != mListeners.end(); ++lit) {
+			(*lit)->OnBulletFired(mBullets);
+		}
+	}
+
 private:
 	int mLives;
+	int mBullets;
 
 	typedef std::list< shared_ptr<IPlayerListener> > PlayerListenerList;
 

@@ -36,6 +36,11 @@ public:
 	void OnCollision(const GameObjectList& objects);
 	void SetDirection(Direction dir) { mDirection = dir; }
 
+	void IncreaseBullets() { mBullets++; };
+	void DecreaseBullets() { mBullets--; };
+	void SetBullets() { mBullets = mMaxBullets; }
+	int GetBullets() { return mBullets; }
+
 private:
 	float mSpeed;
 
@@ -45,6 +50,10 @@ private:
 
 	Direction mDirection;
 	GLVector3f mPrevPosition;
+
+	//stuff for ammo system
+	int mBullets;
+	int mMaxBullets = 6;
 
 };
 #endif
