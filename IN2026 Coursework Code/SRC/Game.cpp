@@ -9,8 +9,10 @@
 #include "Character.h"
 #include "BoundingShape.h"
 #include "BoundingSphere.h"
+#include "BoundingBox.h"
 #include "GUILabel.h"
 #include "Explosion.h"
+#include "Wall.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -76,12 +78,17 @@ void Game::Start()
 	//other player sprites
 	Animation* player_anim_death = AnimationManager::GetInstance().CreateAnimationFromFile("char_death", 1536, 128, 128, 128, "char_death.png");
 	Animation* player_anim_damage = AnimationManager::GetInstance().CreateAnimationFromFile("char_damage", 768, 128, 128, 128, "char_damage.png");
+
+	//wall sprites
+	Animation* wall_anim = AnimationManager::GetInstance().CreateAnimationFromFile("wall", 768, 128, 128, 128, "wall.png");
 	
 	// Create a character and add it to the world
 	mGameWorld->AddObject(CreateCharacter());
 
 	// Create some asteroids and add them to the world
-	//CreateEnemies(10);
+	//CreateEnemies(10)
+
+	CreateWalls();
 
 	//Create the GUI
 	CreateGUI();
@@ -309,7 +316,7 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	// Create a raw pointer to a spaceship that can be converted to
 	// shared_ptrs of different types because GameWorld implements IRefCount
 	mCharacter = make_shared<Character>();
-	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 4.0f));
+	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 0.8f));
 	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
 	mCharacter->SetAmmoShape(Ammo_shape);
 
@@ -340,6 +347,45 @@ void Game::CreateEnemies(const uint num_enemies)
 		enemy->SetScale(0.2f);
 		mGameWorld->AddObject(enemy);
 	}
+}
+
+void Game::CreateWalls() {
+
+	float roomW = 6000.0f;
+	float roomH = 6000.0f;
+	float thickness = 5.0f;
+
+	Animation* WallAnim_ptr = AnimationManager::GetInstance().GetAnimationByName("wall");
+	shared_ptr<Sprite> wall_spriteH = make_shared<Sprite>(roomW, thickness, WallAnim_ptr);
+	shared_ptr<Sprite> wall_spriteV = make_shared<Sprite>(thickness, roomH, WallAnim_ptr);
+
+	//top
+	shared_ptr<GameObject> wallT = make_shared<Wall>();
+	wallT->SetSprite(wall_spriteH);
+	wallT->SetPosition(GLVector3f(0, roomH / 2, 0));
+	wallT->SetBoundingShape(make_shared<BoundingBox>(wallT->GetThisPtr(), roomW, thickness));
+	mGameWorld->AddObject(wallT);
+
+	//bottom
+	shared_ptr<GameObject> wallB = make_shared<Wall>();
+	wallB->SetSprite(wall_spriteH);
+	wallB->SetPosition(GLVector3f(0, ( - roomH / 2), 0));
+	wallB->SetBoundingShape(make_shared<BoundingBox>(wallB->GetThisPtr(), roomW, thickness));
+	mGameWorld->AddObject(wallB);
+
+	//left
+	shared_ptr<GameObject> wallL = make_shared<Wall>();
+	wallL->SetSprite(wall_spriteV);
+	wallL->SetPosition(GLVector3f(-(roomW / 2), 0, 0));
+	wallL->SetBoundingShape(make_shared<BoundingBox>(wallL->GetThisPtr(), thickness, roomH));
+	mGameWorld->AddObject(wallL);
+
+	//right
+	shared_ptr<GameObject> wallR = make_shared<Wall>();
+	wallR->SetSprite(wall_spriteV);
+	wallR->SetPosition(GLVector3f(roomW / 2, 0, 0));
+	wallR->SetBoundingShape(make_shared<BoundingBox>(wallR->GetThisPtr(), thickness, roomH));
+	mGameWorld->AddObject(wallR);
 }
 
 void Game::CreateGUI()

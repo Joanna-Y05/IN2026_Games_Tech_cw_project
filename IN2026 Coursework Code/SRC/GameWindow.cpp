@@ -59,7 +59,7 @@ void  GameWindow::OnWindowReshaped(int w, int h)
 	// Reshape the viewport to cover the whole window
 	glViewport(0, 0, w, h);
 	// Update the world and display to match
-	UpdateWorldSize();
+	//UpdateWorldSize();
 	UpdateDisplaySize();
 }
    

@@ -44,6 +44,7 @@ private:
 	shared_ptr<Animation> mAnim;
 
 	Direction mDirection;
+	GLVector3f mPrevPosition;
 
 };
 #endif

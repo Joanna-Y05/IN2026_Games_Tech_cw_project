@@ -3,6 +3,7 @@
 #include "Ammo.h"
 #include "Character.h"
 #include "BoundingSphere.h"
+#include <iostream>
 
 using namespace std;
 
@@ -36,6 +37,7 @@ Character::~Character(void)
 /** Update this spaceship. */
 void Character::Update(int t)
 {
+	mPrevPosition = mPosition;
 	// Call parent update function
 	GameObject::Update(t);
 }
@@ -129,7 +131,7 @@ void Character::Shoot(void)
 
 bool Character::CollisionTest(shared_ptr<GameObject> o)
 {
-	if (o->GetType() != GameObjectType("Enemy")) return false;
+	if (o->GetType() != GameObjectType("Enemy") || o->GetType() != GameObjectType("Wall")) return false;
 	if (mBoundingShape.get() == NULL) return false;
 	if (o->GetBoundingShape().get() == NULL) return false;
 	return mBoundingShape->CollisionTest(o->GetBoundingShape());
@@ -137,5 +139,33 @@ bool Character::CollisionTest(shared_ptr<GameObject> o)
 
 void Character::OnCollision(const GameObjectList& objects)
 {
-	mWorld->FlagForRemoval(GetThisPtr());
+	//mWorld->FlagForRemoval(GetThisPtr()); //this would delete the player which i do not want anymore but kept for reference in case i need this functionality
+
+	
+	for (auto obj : objects) {
+		//collisions with walls
+		if (obj->GetType().GetTypeName() == "Wall") {
+
+			//for x axis
+			if (mPosition.x != mPrevPosition.x) {
+				mPosition.x = mPrevPosition.x;
+				mVelocity.x = 0;
+			}
+
+			//for y axis
+			if (mPosition.y != mPrevPosition.y) {
+				mPosition.y = mPrevPosition.y;
+				mVelocity.y = 0;
+			}
+
+			break;
+		}
+		
+
+		//collisions with enemies
+
+		//colliions with bullet items
+	}
+	
+
 }
