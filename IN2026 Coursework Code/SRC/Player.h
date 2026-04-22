@@ -12,7 +12,7 @@
 class Player : public IGameWorldListener
 {
 public:
-	Player() { mLives = 3;}
+	Player() {}
 	virtual ~Player() {}
 
 	void OnWorldUpdated(GameWorld* world) {}
@@ -35,6 +35,10 @@ public:
 		if (object->GetType() == GameObjectType("Character")) {
 			mLives -= 1;
 			FirePlayerKilled();
+		}
+		if (object->GetType() == GameObjectType("CollectibleAmmo")) {
+			mBullets += 1;
+			BulletCollected();
 		}
 	}
 
@@ -60,6 +64,16 @@ public:
 			(*lit)->OnBulletFired(mBullets);
 		}
 	}
+
+	void BulletCollected()
+	{
+		// Send message to all listeners
+		for (PlayerListenerList::iterator lit = mListeners.begin();
+			lit != mListeners.end(); ++lit) {
+			(*lit)->OnBulletCollected(mBullets);
+		}
+	}
+
 
 private:
 	int mLives;

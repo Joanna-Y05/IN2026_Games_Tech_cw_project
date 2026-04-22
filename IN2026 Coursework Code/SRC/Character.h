@@ -41,6 +41,8 @@ public:
 	void SetBullets() { mBullets = mMaxBullets; }
 	int GetBullets() { return mBullets; }
 
+	void TakeDamage(int damage) { mHealth -= damage; }
+
 private:
 	float mSpeed;
 
@@ -54,6 +56,9 @@ private:
 	//stuff for ammo system
 	int mBullets;
 	int mMaxBullets = 6;
+
+	//stuff for health system
+	int mHealth = 30;
 
 };
 #endif

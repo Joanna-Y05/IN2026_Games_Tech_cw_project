@@ -39,6 +39,11 @@ void Character::Update(int t)
 {
 	mPrevPosition = mPosition;
 	// Call parent update function
+
+	if (mHealth < 0) {
+		mWorld->FlagForRemoval(GetThisPtr());
+	}
+
 	GameObject::Update(t);
 }
 
@@ -165,12 +170,10 @@ void Character::OnCollision(const GameObjectList& objects)
 
 			break;
 		}
-		
+
 
 		//collisions with enemies
 
 		//colliions with bullet items
 	}
-	
-
 }

@@ -13,6 +13,7 @@
 #include "GUILabel.h"
 #include "Explosion.h"
 #include "Wall.h"
+#include "CollectibleAmmo.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -81,14 +82,21 @@ void Game::Start()
 
 	//wall sprites
 	Animation* wall_anim = AnimationManager::GetInstance().CreateAnimationFromFile("wall", 768, 128, 128, 128, "wall.png");
+
+	//bullet sprite
+	//Animation* bullet1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("bullet1", 768, 128, 128, 128, "bullet1.png");
 	
 	// Create a character and add it to the world
 	mGameWorld->AddObject(CreateCharacter());
 
 	// Create some asteroids and add them to the world
-	//CreateEnemies(10)
+	CreateEnemies(10);
 
 	CreateWalls();
+
+	//test for instantiating bullets
+
+	SpawnBullet(2);
 
 	//Create the GUI
 	CreateGUI();
@@ -129,6 +137,7 @@ void Game::OnKeyReleased(uchar key, int x, int y) {}
 void Game::OnSpecialKeyPressed(int key, int x, int y)
 {
 	shared_ptr<Sprite> Character_sprite1;
+	//Character_sprite1->SetLoopAnimation(true);
 	Animation* anim_ptr2;
 
 	Direction dir;
@@ -206,6 +215,7 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 void Game::OnSpecialKeyReleased(int key, int x, int y)
 {
 	shared_ptr<Sprite> Character_sprite2;
+	//Character_sprite2->SetLoopAnimation(true);
 
 	Animation* anim_ptr3;
 
@@ -255,8 +265,8 @@ void Game::OnSpecialKeyReleased(int key, int x, int y)
 
 		break;
 		// Default case - do nothing
-	default: 
-		
+	default:
+
 		anim_ptr3 = AnimationManager::GetInstance().GetAnimationByName("char_idleDown");
 		Character_sprite2 = make_shared<Sprite>(anim_ptr3->GetWidth(), anim_ptr3->GetHeight(), anim_ptr3);
 		mCharacter->SetSprite(Character_sprite2);
@@ -307,6 +317,10 @@ void Game::OnTimer(int value)
 	{
 		mGameOverLabel->SetVisible(true);
 	}
+	if (value == SPAWN_NEW_BULLET) {
+
+		SpawnBullet(2);
+	}
 
 }
 
@@ -316,7 +330,7 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	// Create a raw pointer to a spaceship that can be converted to
 	// shared_ptrs of different types because GameWorld implements IRefCount
 	mCharacter = make_shared<Character>();
-	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 0.8f));
+	mCharacter->SetBoundingShape(make_shared<BoundingSphere>(mCharacter->GetThisPtr(), 5.0f));
 	shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
 	mCharacter->SetAmmoShape(Ammo_shape);
 
@@ -340,15 +354,29 @@ void Game::CreateEnemies(const uint num_enemies)
 	for (uint i = 0; i < num_enemies; i++)
 	{
 		Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
-		shared_ptr<Sprite> enemy_sprite =
-			make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+		shared_ptr<Sprite> enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
 		enemy_sprite->SetLoopAnimation(true);
-		shared_ptr<GameObject> enemy = make_shared<Enemy>();
-		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 10.0f));
+
+		shared_ptr<Enemy> enemy = make_shared<Enemy>();
+		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 5.0f));
 		enemy->SetSprite(enemy_sprite);
-		enemy->SetScale(0.2f);
+		enemy->SetEnemyType(1);
 		mGameWorld->AddObject(enemy);
 	}
+}
+
+void Game::SpawnBullet(int bullets){
+
+	for (int i = 0; i < bullets; i++) {
+		shared_ptr<GameObject> bullet = make_shared<CollectibleAmmo>();
+		bullet->SetBoundingShape(make_shared<BoundingSphere>(bullet->GetThisPtr(), 4.0f));
+		shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
+		bullet->SetShape(Ammo_shape);
+		bullet->SetScale(3.5f);
+		mGameWorld->AddObject(bullet);
+	}
+
+	SetTimer(10000, SPAWN_NEW_BULLET);
 }
 
 void Game::CreateWalls() {
@@ -446,6 +474,15 @@ void Game::OnScoreChanged(int score)
 }
 
 void Game::OnBulletFired(int bullets_left) {
+
+	// Format the bullet message using an string-based stream
+	std::ostringstream msg_stream;
+	msg_stream << "bullets: " << bullets_left;
+	// Get the score message as a string
+	std::string bullet_msg = msg_stream.str();
+	mBulletsLabel->SetText(bullet_msg);
+}
+void Game::OnBulletCollected(int bullets_left) {
 
 	// Format the bullet message using an string-based stream
 	std::ostringstream msg_stream;
