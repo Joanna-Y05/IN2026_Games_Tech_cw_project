@@ -14,7 +14,7 @@ public:
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
 
-	void DowngradeEnemy() { currentType -= 1; SetEnemyType(currentType); };
+	void DowngradeEnemy() { currentType -= 1; SetEnemyType(currentType); }
 	void SetFollowRadius(float followRadius);
 	void SetEnemyType(int type);
 	int GetEnemyType() { return currentType; }
@@ -25,7 +25,7 @@ public:
 
 
 protected:
-	float enemyScales[3] = {0.1f, 0.2f, 0.5f};
+	float enemyScales[3] = {0.1f, 0.2f, 0.3f};
 	int enemyPowers[3] = { 1, 5, 12 };
 	float enemySpeeds[3] = { 10.0f, 20.0f, 30.0f };
 	int currentType;

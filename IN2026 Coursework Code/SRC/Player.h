@@ -8,6 +8,7 @@
 #include "IPlayerListener.h"
 #include "IGameWorldListener.h"
 #include "Character.h"
+#include "Enemy.h"
 
 class Player : public IGameWorldListener
 {
@@ -18,13 +19,6 @@ public:
 	void OnWorldUpdated(GameWorld* world) {}
 
 	void OnObjectAdded(GameWorld* world, shared_ptr<GameObject> object) {
-	
-		/*
-		if (object->GetType() == GameObjectType("Character")) {
-			mBullets;
-
-		}
-		*/
 		if (object->GetType() == GameObjectType("Ammo")) {
 			mBullets -= 1;
 			BulletFired();
@@ -87,6 +81,7 @@ public:
 		// Send message to all listeners
 		for (PlayerListenerList::iterator lit = mListeners.begin();
 			lit != mListeners.end(); ++lit) {
+			if (mHealth < 0) { mHealth = 0; }
 			(*lit)->OnPlayerTakeDamage(mHealth);
 		}
 	}
@@ -95,7 +90,7 @@ public:
 private:
 	int mLives = 3;
 	int mBullets = 6;
-	int mHealth = 10;
+	int mHealth = 20;
 
 	typedef std::list< shared_ptr<IPlayerListener> > PlayerListenerList;
 

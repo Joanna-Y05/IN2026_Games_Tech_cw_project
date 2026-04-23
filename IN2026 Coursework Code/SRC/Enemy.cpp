@@ -37,11 +37,12 @@ void Enemy::OnCollision(const GameObjectList& objects)
 		if (obj->GetType().GetTypeName() == "Ammo") {
 			
 			
-			if (GetEnemyType() == 1) {
+			if (GetEnemyType() == 0) {
 				mWorld->FlagForRemoval(GetThisPtr());
 			}
 			else {
 				DowngradeEnemy();
+				mWorld->FlagForRemoval(GetThisPtr());
 			}
 			
 		}
@@ -67,7 +68,7 @@ void Enemy::Update(int t) {
 
 	shared_ptr<GameObject> player = mWorld->GetPlayer();
 
-	if (mFollowSphere->CollisionTest(player->GetBoundingShape())) {
+	if (mWorld->GetPlayer() != NULL && mFollowSphere->CollisionTest(player->GetBoundingShape())) {
 		GLVector3f dir = player->GetPosition() - mPosition;
 
 		float len = sqrt(dir.x * dir.x + dir.y * dir.y);
@@ -87,17 +88,17 @@ void Enemy::Update(int t) {
 }
 
 void Enemy::SetEnemyType(int type) {
-	if (type == 1) {
+	if (type == 0) {
 		this->SetScale(enemyScales[0]);
 		currentPower = enemyPowers[0];
 		mSpeed = enemySpeeds[0];
 	}
-	if (type == 2) {
+	if (type == 1) {
 		this->SetScale(enemyScales[1]);
 		currentPower = enemyPowers[1];
 		mSpeed = enemySpeeds[1];
 	}
-	if (type == 3) {
+	if (type == 2) {
 		this->SetScale(enemyScales[2]);
 		currentPower = enemyPowers[2];
 		mSpeed = enemySpeeds[2];

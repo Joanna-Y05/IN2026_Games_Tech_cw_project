@@ -18,8 +18,7 @@
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
 /** Constructor. Takes arguments from command line, just in case. */
-Game::Game(int argc, char* argv[])
-	: GameSession(argc, argv)
+Game::Game(int argc, char* argv[]) : GameSession(argc, argv)
 {
 	mLevel = 0;
 	mEnemyCount = 0;
@@ -291,8 +290,12 @@ void Game::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 		mEnemyCount--;
 		if (mEnemyCount <= 0)
 		{
-			//SetTimer(500, START_NEXT_LEVEL);
+			SetTimer(500, START_NEXT_LEVEL);
 		}
+	}
+	if (object->GetType() == GameObjectType("Character"))
+	{
+		mGameWorld->SetPlayer(NULL);
 	}
 }
 
@@ -309,7 +312,7 @@ void Game::OnTimer(int value)
 	if (value == START_NEXT_LEVEL)
 	{
 		mLevel++;
-		int num_Enemies = 10 + 2 * mLevel;
+		int num_Enemies = 5 + 2 * mLevel;
 		CreateEnemies(num_Enemies);
 	}
 
@@ -345,6 +348,7 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	mCharacter->Reset();
 
 	mGameWorld->SetPlayer(mCharacter);
+	mCharacter->RestoreHealth();
 	// Return the spaceship so it can be added to the world
 	return mCharacter;
 
@@ -355,6 +359,8 @@ void Game::CreateEnemies(const uint num_enemies)
 	mEnemyCount = num_enemies;
 	for (uint i = 0; i < num_enemies; i++)
 	{
+		int num = rand() % 3;
+
 		Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
 		shared_ptr<Sprite> enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
 		enemy_sprite->SetLoopAnimation(true);
@@ -362,8 +368,8 @@ void Game::CreateEnemies(const uint num_enemies)
 		shared_ptr<Enemy> enemy = make_shared<Enemy>();
 		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 5.0f));
 		enemy->SetSprite(enemy_sprite);
-		enemy->SetEnemyType(2);
-		enemy->SetFollowRadius(20.0f);
+		enemy->SetEnemyType(num);
+		enemy->SetFollowRadius(25.0f);
 		mGameWorld->AddObject(enemy);
 	}
 }
@@ -465,7 +471,7 @@ void Game::CreateGUI()
 	mGameDisplay->GetContainer()->AddComponent(bullets_component, GLVector2f(0.0f, 0.9f));
 
 	//health label
-	mHealthLabel = make_shared<GUILabel>("Health: 50");
+	mHealthLabel = make_shared<GUILabel>("Health: 20");
 	mHealthLabel->SetVerticalAlignment(GUIComponent::GUI_VALIGN_BOTTOM);
 	shared_ptr<GUIComponent> health_component
 		= static_pointer_cast<GUIComponent>(mHealthLabel);

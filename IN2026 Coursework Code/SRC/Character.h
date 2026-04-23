@@ -42,6 +42,7 @@ public:
 	int GetBullets() { return mBullets; }
 
 	void TakeDamage(int damage) { mHealth -= damage; }
+	void RestoreHealth() { mHealth = 30; }
 
 private:
 	float mSpeed;
@@ -58,7 +59,7 @@ private:
 	int mMaxBullets = 6;
 
 	//stuff for health system
-	int mHealth = 10;
+	int mHealth = 20;
 
 };
 #endif
