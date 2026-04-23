@@ -13,6 +13,7 @@
 class GameObject;
 class Character;
 class GUILabel;
+class GUIIcon;
 
 class Game : public GameSession, public IKeyboardListener, public IGameWorldListener, public IScoreListener, public IPlayerListener
 {
@@ -40,6 +41,7 @@ public:
 	void OnBulletFired(int bullets_left);
 	void OnBulletCollected(int bullets_left);
 	void OnPlayerTakeDamage(int health_left);
+	void OnHeartCollected(int lives_left);
 
 	// Declaration of IGameWorldListener interface //////////////////////////////
 
@@ -57,6 +59,7 @@ private:
 	shared_ptr<GUILabel> mGameOverLabel;
 	shared_ptr<GUILabel> mBulletsLabel;
 	shared_ptr<GUILabel> mHealthLabel;
+	shared_ptr<GUIIcon> mFloor;
 
 	uint mLevel;
 	uint mEnemyCount; //this has been changed
@@ -68,11 +71,13 @@ private:
 	shared_ptr<GameObject> CreateExplosion();
 	void CreateWalls();
 	void SpawnBullet(int num_Bullets);
+	void SpawnLives(int lives);
 
 	const static uint SHOW_GAME_OVER = 0;
 	const static uint START_NEXT_LEVEL = 1;
 	const static uint CREATE_NEW_PLAYER = 2;
 	const static uint SPAWN_NEW_BULLET = 3;
+	const static uint SPAWN_NEW_LIFE = 4;
 
 	ScoreKeeper mScoreKeeper;
 	Player mPlayer;

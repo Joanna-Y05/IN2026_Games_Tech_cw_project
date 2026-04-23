@@ -14,24 +14,25 @@ public:
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
 
-	void DowngradeEnemy() { currentType -= 1; SetEnemyType(currentType); }
+	void DowngradeEnemy();
 	void SetFollowRadius(float followRadius);
 	void SetEnemyType(int type);
 	int GetEnemyType() { return currentType; }
 	void Update(int t);
 	int GetPower() { return currentPower; }
+	bool GetWhoKilled() { return KilledByPlayer; }
 
 
 
 
 protected:
-	float enemyScales[3] = {0.1f, 0.2f, 0.3f};
 	int enemyPowers[3] = { 1, 5, 12 };
 	float enemySpeeds[3] = { 10.0f, 20.0f, 30.0f };
 	int currentType;
 	int currentPower;
 	shared_ptr<BoundingSphere> mFollowSphere;
 	float mSpeed;
+	bool KilledByPlayer = false;
 
 
 };

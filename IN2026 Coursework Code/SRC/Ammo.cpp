@@ -56,16 +56,3 @@ void Ammo::OnCollision(const GameObjectList& objects)
 {
 	mWorld->FlagForRemoval(GetThisPtr());
 }
-
-void Ammo::MoveVertical(float t)
-{
-	mSpeed = t;
-	mVelocity.y = mSpeed * cos(DEG2RAD);
-}
-
-void Ammo::MoveHorizontal(float t)
-{
-	mSpeed = t;
-	mVelocity.x = mSpeed * cos(DEG2RAD);
-
-}

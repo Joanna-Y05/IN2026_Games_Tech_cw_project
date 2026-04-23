@@ -8,6 +8,7 @@ public:
 	virtual void OnBulletFired(int bullets_left) = 0;
 	virtual void OnBulletCollected(int bullets_left) = 0;
 	virtual void OnPlayerTakeDamage(int health_left) = 0;
+	virtual void OnHeartCollected(int lives_left) = 0;
 };
 
 #endif

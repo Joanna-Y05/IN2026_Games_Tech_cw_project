@@ -20,10 +20,6 @@ public:
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
 
-	//added movement for ammo copying character movement scripts
-	virtual void MoveVertical(float t);
-	virtual void MoveHorizontal(float t);
-
 
 protected:
 	//int mTimeToLive;

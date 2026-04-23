@@ -14,6 +14,9 @@
 #include "Explosion.h"
 #include "Wall.h"
 #include "CollectibleAmmo.h"
+#include "ImageManager.h"
+#include "Image.h"
+#include "CollectibleLife.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -59,7 +62,11 @@ void Game::Start()
 
 	//change these for new assets
 	Animation* explosion_anim = AnimationManager::GetInstance().CreateAnimationFromFile("explosion", 64, 1024, 64, 64, "explosion_fs.png");
-	Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
+	
+	//enemy sprites
+	Animation* enemy1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("enemy1", 768, 128, 128, 128, "enemy1.png");
+	Animation* enemy2_anim = AnimationManager::GetInstance().CreateAnimationFromFile("enemy2", 768, 128, 128, 128, "enemy2.png");
+	Animation* enemy3_anim = AnimationManager::GetInstance().CreateAnimationFromFile("enemy3", 768, 128, 128, 128, "enemy3.png");
 	
 	//player anim stuff
 
@@ -145,7 +152,7 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 	{
 		// If up arrow key is pressed start applying forward thrust
 	case GLUT_KEY_UP: 
-		mCharacter->MoveVertical(10);
+		mCharacter->MoveVertical(15);
 		dir = UP;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveUp");
@@ -161,7 +168,7 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		// 
 		// If left arrow key is pressed start rotating anti-clockwise
 	case GLUT_KEY_LEFT: 
-		mCharacter->MoveHorizontal(-10);
+		mCharacter->MoveHorizontal(-15);
 		dir = LEFT;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveLeft");
@@ -175,7 +182,7 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		// 
 		// If right arrow key is pressed start rotating clockwise
 	case GLUT_KEY_RIGHT: 
-		mCharacter->MoveHorizontal(10);
+		mCharacter->MoveHorizontal(15);
 		dir = RIGHT;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveRight");
@@ -187,7 +194,7 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		break;
 
 	case GLUT_KEY_DOWN:
-		mCharacter->MoveVertical(-10);
+		mCharacter->MoveVertical(-15);
 		dir = DOWN;
 
 		anim_ptr2 = AnimationManager::GetInstance().GetAnimationByName("char_moveDown");
@@ -209,6 +216,8 @@ void Game::OnSpecialKeyPressed(int key, int x, int y)
 		mCharacter->SetDirection(dir);
 		break;
 	}
+
+	Character_sprite1->SetLoopAnimation(true);
 }
 
 void Game::OnSpecialKeyReleased(int key, int x, int y)
@@ -292,6 +301,8 @@ void Game::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 		{
 			SetTimer(500, START_NEXT_LEVEL);
 		}
+
+
 	}
 	if (object->GetType() == GameObjectType("Character"))
 	{
@@ -323,6 +334,9 @@ void Game::OnTimer(int value)
 	if (value == SPAWN_NEW_BULLET) {
 
 		SpawnBullet(2);
+	}
+	if (value == SPAWN_NEW_BULLET) {
+		SpawnLives(1);
 	}
 
 }
@@ -361,13 +375,29 @@ void Game::CreateEnemies(const uint num_enemies)
 	{
 		int num = rand() % 3;
 
-		Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
-		shared_ptr<Sprite> enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
-		enemy_sprite->SetLoopAnimation(true);
+		Animation* anim_ptr;
+		shared_ptr<Sprite> enemy_sprite;
+
+		if (num == 0) {
+			anim_ptr = AnimationManager::GetInstance().GetAnimationByName("enemy1");
+			enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+			enemy_sprite->SetLoopAnimation(true);
+		}
+		else if (num == 1) {
+			anim_ptr = AnimationManager::GetInstance().GetAnimationByName("enemy2");
+			enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+			enemy_sprite->SetLoopAnimation(true);
+		}
+		else if (num == 2) {
+			anim_ptr = AnimationManager::GetInstance().GetAnimationByName("enemy3");
+			enemy_sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+			enemy_sprite->SetLoopAnimation(true);
+		}
 
 		shared_ptr<Enemy> enemy = make_shared<Enemy>();
-		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 5.0f));
+		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 4.0f));
 		enemy->SetSprite(enemy_sprite);
+		enemy->SetScale(0.8f);
 		enemy->SetEnemyType(num);
 		enemy->SetFollowRadius(25.0f);
 		mGameWorld->AddObject(enemy);
@@ -375,17 +405,37 @@ void Game::CreateEnemies(const uint num_enemies)
 }
 
 void Game::SpawnBullet(int bullets){
-
+	shared_ptr<Sprite> bullet_sprite;
 	for (int i = 0; i < bullets; i++) {
 		shared_ptr<GameObject> bullet = make_shared<CollectibleAmmo>();
 		bullet->SetBoundingShape(make_shared<BoundingSphere>(bullet->GetThisPtr(), 4.0f));
-		shared_ptr<Shape> Ammo_shape = make_shared<Shape>("Bullet.shape");
-		bullet->SetShape(Ammo_shape);
-		bullet->SetScale(3.5f);
+
+		Animation* bullet_img = AnimationManager::GetInstance().CreateAnimationFromFile("bullet", 64, 64,64,64, "bullet.png");
+		Animation* bullet_ptr = AnimationManager::GetInstance().GetAnimationByName("bullet");
+		bullet_sprite = make_shared<Sprite>(bullet_ptr->GetWidth(), bullet_ptr->GetHeight(), bullet_ptr);
+		bullet->SetSprite(bullet_sprite);
+		bullet->SetScale(0.1f);
 		mGameWorld->AddObject(bullet);
 	}
 
 	SetTimer(10000, SPAWN_NEW_BULLET);
+}
+
+void Game::SpawnLives(int lives) {
+	shared_ptr<Sprite> life_sprite;
+	for (int i = 0; i < lives; i++) {
+		shared_ptr<GameObject> life = make_shared<CollectibleLife>();
+		life->SetBoundingShape(make_shared<BoundingSphere>(life->GetThisPtr(), 4.0f));
+
+		Animation* life_img = AnimationManager::GetInstance().CreateAnimationFromFile("heart", 64, 64, 64, 64, "heart.png");
+		Animation* life_ptr = AnimationManager::GetInstance().GetAnimationByName("heart");
+		life_sprite = make_shared<Sprite>(life_ptr->GetWidth(), life_ptr->GetHeight(), life_ptr);
+		life->SetSprite(life_sprite);
+		life->SetScale(0.1f);
+		mGameWorld->AddObject(life);
+	}
+
+	SetTimer(45000, SPAWN_NEW_BULLET);
 }
 
 void Game::CreateWalls() {
@@ -432,6 +482,10 @@ void Game::CreateGUI()
 	// Add a (transparent) border around the edge of the game display
 	mGameDisplay->GetContainer()->SetBorder(GLVector2i(10, 10));
 
+	//Image* floor_img = ImageManager::GetInstance().CreateImageFromFile("floor", 128, 128, "floor.png");
+
+	//add  the floor
+	//mFloor = make_shared<GUIIcon>(floor_img);
 
 	// Create a new GUILabel and wrap it up in a shared_ptr
 	mScoreLabel = make_shared<GUILabel>("Score: 0");
@@ -525,12 +579,24 @@ void Game::OnPlayerKilled(int lives_left)
 	if (lives_left > 0)
 	{
 		SetTimer(1000, CREATE_NEW_PLAYER);
+		mCharacter->RestoreHealth();
+		mGameWorld->SetPlayer(mCharacter);
 	}
 	else
 	{
 		SetTimer(500, SHOW_GAME_OVER);
 	}
 }
+
+void Game::OnHeartCollected(int lives_left) {
+	// Format the bullet message using an string-based stream
+	std::ostringstream msg_stream;
+	msg_stream << "Lives: " << lives_left;
+	// Get the score message as a string
+	std::string lives_msg = msg_stream.str();
+	mLivesLabel->SetText(lives_msg);
+}
+
 void Game::OnPlayerTakeDamage(int health_left) {
 	// Format the bullet message using an string-based stream
 	std::ostringstream msg_stream;

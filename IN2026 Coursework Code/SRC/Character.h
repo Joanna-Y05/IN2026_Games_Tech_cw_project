@@ -42,7 +42,7 @@ public:
 	int GetBullets() { return mBullets; }
 
 	void TakeDamage(int damage) { mHealth -= damage; }
-	void RestoreHealth() { mHealth = 30; }
+	void RestoreHealth() { mHealth = 20; }
 
 private:
 	float mSpeed;

@@ -7,6 +7,7 @@
 #include "GameObjectType.h"
 #include "IScoreListener.h"
 #include "IGameWorldListener.h"
+#include "Enemy.h"
 
 class ScoreKeeper : public IGameWorldListener
 {
@@ -20,8 +21,13 @@ public:
 	void OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 	{
 		if (object->GetType() == GameObjectType("Enemy")) {
- 			mScore += 10;
-			FireScoreChanged();
+			
+			Enemy* temp = (Enemy*)object.get();
+
+			if (temp->GetWhoKilled() == true) {
+				mScore += 10;
+				FireScoreChanged();
+			}
 		}
 	}
 

@@ -9,12 +9,10 @@ Enemy::Enemy(void) : GameObject("Enemy")
 {
 	//mAngle = rand() % 360;
 	mRotation = 0; // rand() % 90;
-	mPosition.x = rand() / 4;
-	mPosition.y = rand() / 4;
+	mPosition.x = rand() % 100;
+	mPosition.y = rand() % 100;
 	mPosition.z = 0.0;
-	mVelocity.x = 10.0 * cos(DEG2RAD * mAngle);
-	mVelocity.y = 10.0 * sin(DEG2RAD * mAngle);
-	mVelocity.z = 0.0;
+	mVelocity = 0.0f;
 }
 
 Enemy::~Enemy(void)
@@ -36,6 +34,7 @@ void Enemy::OnCollision(const GameObjectList& objects)
 		//for collisions with ammo
 		if (obj->GetType().GetTypeName() == "Ammo") {
 			
+			KilledByPlayer = true;
 			
 			if (GetEnemyType() == 0) {
 				mWorld->FlagForRemoval(GetThisPtr());
@@ -81,27 +80,26 @@ void Enemy::Update(int t) {
 		mVelocity.y = dir.y * mSpeed;
 	}
 	else {
-		mVelocity.x = 10.0 * cos(DEG2RAD * mAngle);
-		mVelocity.y = 10.0 * sin(DEG2RAD * mAngle);
-		mVelocity.z = 0.0;
+		mVelocity = 0.0f;
 	}
 }
 
 void Enemy::SetEnemyType(int type) {
 	if (type == 0) {
-		this->SetScale(enemyScales[0]);
 		currentPower = enemyPowers[0];
 		mSpeed = enemySpeeds[0];
 	}
 	if (type == 1) {
-		this->SetScale(enemyScales[1]);
 		currentPower = enemyPowers[1];
 		mSpeed = enemySpeeds[1];
 	}
 	if (type == 2) {
-		this->SetScale(enemyScales[2]);
 		currentPower = enemyPowers[2];
 		mSpeed = enemySpeeds[2];
 	}
 }
 
+void Enemy::DowngradeEnemy() { 
+	currentType -= 1; 
+	SetEnemyType(currentType); 
+}

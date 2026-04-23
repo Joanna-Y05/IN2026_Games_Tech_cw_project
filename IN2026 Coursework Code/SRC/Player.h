@@ -29,18 +29,27 @@ public:
 	{
 		if (object->GetType() == GameObjectType("Character")) {
 			mLives -= 1;
-			mHealth = 10;
+			mHealth = 20;
 			FirePlayerKilled();
+			DamageTaken();
 		}
 		if (object->GetType() == GameObjectType("CollectibleAmmo")) {
 			mBullets += 1;
 			BulletCollected();
 		}
+		if (object->GetType() == GameObjectType("CollectibleLife")) {
+			mLives += 1;
+			HeartCollected();
+		}
+
+		//Right now this also means when u shoot an enemy
 		if (object->GetType() == GameObjectType("Enemy")) {
 			Enemy* temp = (Enemy*)object.get();
-			mHealth -= temp->GetPower();
-			DamageTaken();
-
+			
+			if (temp->GetWhoKilled() == false) {
+				mHealth -= temp->GetPower();
+				DamageTaken();
+			}
 		}
 	}
 
@@ -64,6 +73,15 @@ public:
 		for (PlayerListenerList::iterator lit = mListeners.begin();
 			lit != mListeners.end(); ++lit) {
 			(*lit)->OnBulletFired(mBullets);
+		}
+	}
+
+	void HeartCollected()
+	{
+		// Send message to all listeners
+		for (PlayerListenerList::iterator lit = mListeners.begin();
+			lit != mListeners.end(); ++lit) {
+			(*lit)->OnHeartCollected(mLives);
 		}
 	}
 
