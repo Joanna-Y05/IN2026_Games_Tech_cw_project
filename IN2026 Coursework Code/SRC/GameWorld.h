@@ -25,7 +25,7 @@ public:
 	void AddObject( shared_ptr<GameObject> ptr );
 	void RemoveObject( shared_ptr<GameObject> ptr );
 	void RemoveObject( GameObject* ptr );
-	// shared_ptr<GameObject> GetGameObject( string name );
+	shared_ptr<GameObject> GetGameObject( string name );
 
 	void FlagForRemoval( GameObject* ptr );
 	void FlagForRemoval( weak_ptr<GameObject> ptr );
@@ -47,6 +47,8 @@ public:
 	int GetHeight() { return mHeight; }
 
 	void WrapXY(float &x, float &y);
+	void SetPlayer(shared_ptr<GameObject> character) { mCharacter = character; }
+	shared_ptr<GameObject> GetPlayer() { return mCharacter; }
 
 protected:
 	void UpdateObjects(int t);
@@ -69,6 +71,8 @@ protected:
 	int mWidth;
 	// The height of the world
 	int mHeight;
+
+	shared_ptr<GameObject> mCharacter;
 };
 
 #endif

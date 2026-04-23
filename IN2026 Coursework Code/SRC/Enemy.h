@@ -3,6 +3,7 @@
 
 #include "GameObject.h"
 #include <array>
+#include "BoundingSphere.h"
 
 class Enemy : public GameObject
 {
@@ -13,20 +14,24 @@ public:
 	bool CollisionTest(shared_ptr<GameObject> o);
 	void OnCollision(const GameObjectList& objects);
 
-	void DestroyEnemy();
 	void DowngradeEnemy() { currentType -= 1; SetEnemyType(currentType); };
-	void SetFollowRadius();
+	void SetFollowRadius(float followRadius);
 	void SetEnemyType(int type);
 	int GetEnemyType() { return currentType; }
+	void Update(int t);
+	int GetPower() { return currentPower; }
 
 
 
 
 protected:
 	float enemyScales[3] = {0.1f, 0.2f, 0.5f};
-	int enemyPowers[3] = { 1, 3, 7 };
+	int enemyPowers[3] = { 1, 5, 12 };
+	float enemySpeeds[3] = { 10.0f, 20.0f, 30.0f };
 	int currentType;
 	int currentPower;
+	shared_ptr<BoundingSphere> mFollowSphere;
+	float mSpeed;
 
 
 };

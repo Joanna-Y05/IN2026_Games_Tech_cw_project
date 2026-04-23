@@ -4,6 +4,8 @@
 #include "Character.h"
 #include "BoundingSphere.h"
 #include <iostream>
+#include "GameObject.h"
+#include "Enemy.h"
 
 using namespace std;
 
@@ -40,9 +42,13 @@ void Character::Update(int t)
 	mPrevPosition = mPosition;
 	// Call parent update function
 
-	if (mHealth < 0) {
+
+
+	if (mHealth <= 0) {
 		mWorld->FlagForRemoval(GetThisPtr());
 	}
+
+
 
 	GameObject::Update(t);
 }
@@ -173,7 +179,14 @@ void Character::OnCollision(const GameObjectList& objects)
 
 
 		//collisions with enemies
+		if (obj->GetType().GetTypeName() == "Enemy") {
+
+			Enemy* temp = (Enemy*)obj.get();
+			TakeDamage(temp->GetPower());
+		}
+
 
 		//colliions with bullet items
+		// handled by collectible ammo class + player class
 	}
 }

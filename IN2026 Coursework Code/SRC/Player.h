@@ -19,11 +19,12 @@ public:
 
 	void OnObjectAdded(GameWorld* world, shared_ptr<GameObject> object) {
 	
+		/*
 		if (object->GetType() == GameObjectType("Character")) {
-			Character* temp = (Character*)object.get();
-			mBullets = temp->GetBullets();
+			mBullets;
 
 		}
+		*/
 		if (object->GetType() == GameObjectType("Ammo")) {
 			mBullets -= 1;
 			BulletFired();
@@ -34,11 +35,18 @@ public:
 	{
 		if (object->GetType() == GameObjectType("Character")) {
 			mLives -= 1;
+			mHealth = 10;
 			FirePlayerKilled();
 		}
 		if (object->GetType() == GameObjectType("CollectibleAmmo")) {
 			mBullets += 1;
 			BulletCollected();
+		}
+		if (object->GetType() == GameObjectType("Enemy")) {
+			Enemy* temp = (Enemy*)object.get();
+			mHealth -= temp->GetPower();
+			DamageTaken();
+
 		}
 	}
 
@@ -74,10 +82,20 @@ public:
 		}
 	}
 
+	void DamageTaken()
+	{
+		// Send message to all listeners
+		for (PlayerListenerList::iterator lit = mListeners.begin();
+			lit != mListeners.end(); ++lit) {
+			(*lit)->OnPlayerTakeDamage(mHealth);
+		}
+	}
+
 
 private:
-	int mLives;
-	int mBullets;
+	int mLives = 3;
+	int mBullets = 6;
+	int mHealth = 10;
 
 	typedef std::list< shared_ptr<IPlayerListener> > PlayerListenerList;
 

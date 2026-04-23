@@ -58,7 +58,7 @@ private:
 	int mMaxBullets = 6;
 
 	//stuff for health system
-	int mHealth = 30;
+	int mHealth = 10;
 
 };
 #endif

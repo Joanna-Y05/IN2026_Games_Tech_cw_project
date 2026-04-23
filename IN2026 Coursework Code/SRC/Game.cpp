@@ -90,7 +90,7 @@ void Game::Start()
 	mGameWorld->AddObject(CreateCharacter());
 
 	// Create some asteroids and add them to the world
-	CreateEnemies(10);
+	CreateEnemies(5);
 
 	CreateWalls();
 
@@ -291,7 +291,7 @@ void Game::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 		mEnemyCount--;
 		if (mEnemyCount <= 0)
 		{
-			SetTimer(500, START_NEXT_LEVEL);
+			//SetTimer(500, START_NEXT_LEVEL);
 		}
 	}
 }
@@ -343,6 +343,8 @@ shared_ptr<GameObject> Game::CreateCharacter()
 	mCharacter->SetScale(0.8f);
 	// Reset spaceship back to centre of the world
 	mCharacter->Reset();
+
+	mGameWorld->SetPlayer(mCharacter);
 	// Return the spaceship so it can be added to the world
 	return mCharacter;
 
@@ -360,7 +362,8 @@ void Game::CreateEnemies(const uint num_enemies)
 		shared_ptr<Enemy> enemy = make_shared<Enemy>();
 		enemy->SetBoundingShape(make_shared<BoundingSphere>(enemy->GetThisPtr(), 5.0f));
 		enemy->SetSprite(enemy_sprite);
-		enemy->SetEnemyType(1);
+		enemy->SetEnemyType(2);
+		enemy->SetFollowRadius(20.0f);
 		mGameWorld->AddObject(enemy);
 	}
 }
@@ -461,6 +464,13 @@ void Game::CreateGUI()
 		= static_pointer_cast<GUIComponent>(mBulletsLabel);
 	mGameDisplay->GetContainer()->AddComponent(bullets_component, GLVector2f(0.0f, 0.9f));
 
+	//health label
+	mHealthLabel = make_shared<GUILabel>("Health: 50");
+	mHealthLabel->SetVerticalAlignment(GUIComponent::GUI_VALIGN_BOTTOM);
+	shared_ptr<GUIComponent> health_component
+		= static_pointer_cast<GUIComponent>(mHealthLabel);
+	mGameDisplay->GetContainer()->AddComponent(health_component, GLVector2f(0.0f, 0.1f));
+
 }
 
 void Game::OnScoreChanged(int score)
@@ -514,6 +524,14 @@ void Game::OnPlayerKilled(int lives_left)
 	{
 		SetTimer(500, SHOW_GAME_OVER);
 	}
+}
+void Game::OnPlayerTakeDamage(int health_left) {
+	// Format the bullet message using an string-based stream
+	std::ostringstream msg_stream;
+	msg_stream << "Health: " << health_left;
+	// Get the score message as a string
+	std::string health_msg = msg_stream.str();
+	mHealthLabel->SetText(health_msg);
 }
 
 shared_ptr<GameObject> Game::CreateExplosion()
